@@ -10,10 +10,10 @@
   "keywords": [
     "markdown",
     "polymer",
-    "codemirror"
+    "editor"
   ],
   "authors": [
-    "Naveenkumar Ganesan"
+    "Tuva Team"
   ],
   "license": "MIT",
   "ignore": [
