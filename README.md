@@ -1,6 +1,8 @@
 # markdown-delight-editor
 A markdown editor (Polymer Component)
 
+![markdown-delight-editor](https://raw.githubusercontent.com/TuvaLabs/markdown-delight-editor/master/static/markdown.png)
+
 # Install:
 Install the component using Bower:
 
