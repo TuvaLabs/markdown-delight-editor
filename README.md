@@ -1,4 +1,7 @@
 # markdown-delight-editor
+
+[![Build Status](https://travis-ci.org/TuvaLabs/markdown-delight-editor.svg?branch=master)](https://travis-ci.org/TuvaLabs/markdown-delight-editor/)
+
 A markdown editor (Polymer Component)
 
 ![markdown-delight-editor](https://raw.githubusercontent.com/TuvaLabs/markdown-delight-editor/master/static/markdown.png)
