@@ -53,6 +53,10 @@
     }
 
     .toolbar {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
         height: 46px;
         border-bottom: 1px solid #ddd;
     }
@@ -112,7 +116,7 @@
                 <li><a class="fa fa fa-picture-o" on-tap="handleImage"></a></li>
             </ul>
             <ul>
-                <li><a class="fa fa-columns" on-tap="handleColumn"></a></li>
+                <li><a class="fa fa-columns" on-tap="handlePreview"></a></li>
                 <li><a class="fa fa-expand" on-tap="handleExpandOrCollapse"></a></li>
             </ul>
             <content select="ul"></content>
@@ -143,35 +147,38 @@
                 self.readyTemp();
             }, 100);
 
+            // For markdown extension
+            var options = {};
+            if(this.extension) {
+                options.extensions = [this.extension];
+            }
+            this.markdownConverter = new showdown.Converter(options);
+
             // Create the keydown event handler
             this._keydownEventHandler = this._onCaptureKeyDown.bind(this);
         },
+        updatePreview: function() {
+            var html = "";
+            if(this.showPreview) {
+                html = this.markdownConverter.makeHtml(this.querySelector('textarea').value);
+            }
+            this.$.preview.innerHTML = html;
+        },
         readyTemp: function() {
-            var textArea = this.querySelector('textarea');
-            var previewArea = this.$.preview;
+            var textArea = this.querySelector('textarea'),
+            previewArea = this.$.preview,
+            self = this;
 
             // Initialise the codemirror
             var codemirror = CodeMirror.fromTextArea(textArea);
             codemirror.on('change', function() {
                 // Update the textarea when the codemirror content gets updated
                 textArea.value = codemirror.getValue();
-                updatePreview();
+                self.updatePreview();
             });
             this.codemirror = codemirror;
 
-            var options = {};
-            if(this.extension) {
-                options.extensions = [this.extension];
-            }
-            var converter = new showdown.Converter(options);
-            function updatePreview() {
-                html = converter.makeHtml(textArea.value);
-                previewArea.innerHTML = html; //marked(textArea.value);
-            }
-            updatePreview();
-
             var cm = this.codemirror;
-            var self = this;
             // To activate the respective toolbar button based on cursor position
         	cm.on("cursorActivity", function() {
         		var stat = getState(cm);
@@ -245,12 +252,19 @@
             var options = editor.options;
             _replaceSelection(cm, stat.table, options.insertTexts.table);
         },
-        handleColumn: function() {
+        handlePreview: function() {
+            if(this.fullScreenView !== 'full-screen') {
+                this.handleExpandOrCollapse();
+            }
             this.showPreview = this.showPreview? '': 'show-preview';
+
+            this.updatePreview();
         },
         handleExpandOrCollapse: function() {
             if(this.fullScreenView === 'full-screen') {
                 this._collapseFullView();
+                this.showPreview = '';
+                this.updatePreview();
             } else {
                 this.fullScreenView = 'full-screen';
                 document.addEventListener('keydown', this._keydownEventHandler);
