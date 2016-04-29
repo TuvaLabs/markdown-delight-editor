@@ -104,20 +104,20 @@
     <div class$="mde-wrapper {{fullScreenView}} {{showPreview}}">
         <div class="toolbar">
             <ul>
-                <li><a class="fa fa-bold" on-tap="handleBold"></a></li>
-                <li><a class="fa fa-italic" on-tap="handleItalic"></a></li>
-                <li><a class="fa fa-header" on-tap="handleHeading"></a></li>
-                <li><a class="fa fa-quote-left" on-tap="handleQuote"></a></li>
-                <li><a class="fa fa-list-ul" on-tap="handleUl"></a></li>
-                <li><a class="fa fa-list-ol" on-tap="handleOl"></a></li>
+                <li><a class="fa fa-bold" on-tap="handleBold" title="Bold"></a></li>
+                <li><a class="fa fa-italic" on-tap="handleItalic" title="Italic"></a></li>
+                <li><a class="fa fa-header" on-tap="handleHeading" title="Header"></a></li>
+                <li><a class="fa fa-quote-left" on-tap="handleQuote" title="Quote"></a></li>
+                <li><a class="fa fa-list-ul" on-tap="handleUl" title="Unordered List"></a></li>
+                <li><a class="fa fa-list-ol" on-tap="handleOl" title="Ordered List"></a></li>
             </ul>
             <ul>
-                <li><a class="fa fa-link" on-tap="handleLink"></a></li>
-                <li><a class="fa fa fa-picture-o" on-tap="handleImage"></a></li>
+                <li><a class="fa fa-link" on-tap="handleLink" title="Link"></a></li>
+                <li><a class="fa fa fa-picture-o" on-tap="handleImage" title="Image"></a></li>
             </ul>
             <ul>
-                <li><a class="fa fa-columns" on-tap="handlePreview"></a></li>
-                <li><a class="fa fa-expand" on-tap="handleExpandOrCollapse"></a></li>
+                <li><a class="fa fa-columns" on-tap="handlePreview" title="Preview"></a></li>
+                <li><a class="fa fa-expand" on-tap="handleExpandOrCollapse" title="Toggle Full Screen"></a></li>
             </ul>
             <content select="ul"></content>
         </div>
@@ -278,6 +278,7 @@
         },
         _collapseFullView: function() {
             this.fullScreenView = "";
+            this.showPreview = '';
             document.removeEventListener('keydown', this._keydownEventHandler);
         },
         replaceSelection: function(text) {
