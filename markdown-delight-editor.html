@@ -263,8 +263,6 @@
         handleExpandOrCollapse: function() {
             if(this.fullScreenView === 'full-screen') {
                 this._collapseFullView();
-                this.showPreview = '';
-                this.updatePreview();
             } else {
                 this.fullScreenView = 'full-screen';
                 document.addEventListener('keydown', this._keydownEventHandler);
@@ -279,6 +277,7 @@
         _collapseFullView: function() {
             this.fullScreenView = "";
             this.showPreview = '';
+            this.updatePreview();
             document.removeEventListener('keydown', this._keydownEventHandler);
         },
         replaceSelection: function(text) {
