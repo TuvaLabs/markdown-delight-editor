@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="markdown-delight-editor-import.html">
 
 <dom-module id="markdown-delight-editor">
@@ -170,7 +170,9 @@
             self = this;
 
             // Initialise the codemirror
-            var codemirror = CodeMirror.fromTextArea(textArea);
+            var codemirror = CodeMirror.fromTextArea(textArea, {
+                'lineWrapping': true
+            });
             codemirror.on('change', function() {
                 // Update the textarea when the codemirror content gets updated
                 textArea.value = codemirror.getValue();
