@@ -1,6 +1,6 @@
 {
   "name": "markdown-delight-editor",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "homepage": "https://github.com/TuvaLabs/markdown-delight-editor",
   "description": "A markdown editor",
   "main": "markdown-delight-editor.html",

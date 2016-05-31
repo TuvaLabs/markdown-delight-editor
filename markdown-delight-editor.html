@@ -13,6 +13,9 @@
         height: 300px;
         border: 1px solid #ddd;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
     }
     .mde-wrapper.full-screen {
         position: fixed;
@@ -22,7 +25,7 @@
         bottom: 0;
         background-color: #fff;
         z-index: 1000;
-        height: auto;
+        height: 100%;
     }
     .mde-wrapper.show-preview .editor-area {
         width: 50%;
@@ -57,13 +60,14 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-        height: 46px;
         border-bottom: 1px solid #ddd;
     }
     .editor-wrapper {
-        height: calc(100% - 46px);
+        flex-grow: 1;
+        overflow: hidden;
+        height: 200px;
     }
-    .mde-wrapper.full-screen .editor-wrapper {
+    /*.mde-wrapper.full-screen .editor-wrapper {
         position: fixed;
         top: 48px;
         left: 0;
@@ -72,9 +76,10 @@
         background-color: #fff;
         z-index: 1001;
         height: auto;
-    }
+    }*/
     .editor-wrapper > ::content .CodeMirror, .editor-wrapper .editor-area {
         height: 100%;
+        overflow-y: auto;
     }
     .toolbar ::content > ul:first-child {
         border: none;
@@ -99,6 +104,36 @@
     .toolbar ::content > ul li a:hover, .toolbar ::content > ul li a.active {
         border-color: #A7A2A2;
         border-radius: 5px;
+    }
+    #form-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 20px 0;
+        z-index: 1003;
+    }
+    #form-wrapper form {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: auto;
+        width: 100%;
+        max-width: 300px;
+        background: #fff;
+    }
+    #form-wrapper .overlay {
+        position: absolute;
+        z-index: -1;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #000;
+        opacity: .5;
+    }
+    #form-wrapper fieldset input {
+        width: 100%;
     }
     </style>
     <div class$="mde-wrapper {{fullScreenView}} {{showPreview}}">
@@ -129,6 +164,43 @@
             <div class="preview-area" id="preview"></div>
             <div style="clear:both"></div>
         </div>
+        <div id="form-wrapper" hidden$="{{isEqual(modalFormInputFields.length, 0)}}">
+            <div class="overlay"></div>
+            <form id="modalForm">
+                <fieldset>
+                    <table>
+                        <tbody>
+                            <template is="dom-repeat" items="{{modalFormInputFields}}">
+                                <tr>
+                                    <template is="dom-if" if="{{isEqual(item.type, 'text')}}">
+                                        <td><span>{{item.name}}</span></td>
+                                        <td>
+                                            <input id="{{item.id}}" type="text"/>
+                                        </td>
+                                    </template>
+                                    <template is="dom-if" if="{{isEqual(item.type, 'select')}}">
+                                        <td><span>{{item.name}}</span></td>
+                                        <td>
+                                            <select id="{{item.id}}">
+                                                <option value="">--select--</option>
+                                                <template is="dom-repeat" items="{{item.options}}">
+                                                    <option value="{{item.value}}">{{item.display}}</option>
+                                                </template>
+                                            </select>
+                                        </td>
+                                    </template>
+                                    <template is="dom-if" if="{{isEqual(item.type, 'label')}}">
+                                        <td colspan="2"><center>{{item.name}}</center></td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </fieldset>
+                <input type="submit" value="Submit"/>&nbsp;&nbsp;
+                <input type="button" value="Cancel" on-tap="resetFormFields" />
+            </form>
+        </div>
     </div>
 </template>
 <script>
@@ -137,6 +209,9 @@
         is: "markdown-delight-editor",
         properties: {
             extension: String
+        },
+        isEqual: function(val1, val2){
+            return val1 === val2;
         },
         //TODO Figure out some other way to handle the dynamic value change on the text area
         ready: function() {
@@ -154,6 +229,8 @@
 
             // Create the keydown event handler
             this._keydownEventHandler = this._onCaptureKeyDown.bind(this);
+
+            this.modalFormInputFields = [];
         },
         updatePreview: function() {
             var html = "";
@@ -229,22 +306,32 @@
             _toggleHeading(this.codemirror, "smaller");
         },
         handleLink: function() {
-            var stat = getState(this.codemirror);
-            var url = "http://";
-            url = prompt("URL:", "http://");
-            if(!url) {
-                return false;
-            }
-            _replaceSelection(this.codemirror, stat.link, ["[", "](#url#)"], url);
+            var formFields = [{
+                name: 'URL',
+                id: 'id_link_url',
+                type: 'text'
+            }];
+            var self = this;
+            self.showModalForm(formFields, function(result){
+                if(result.id_link_url !== undefined && result.id_link_url !== "" ) {
+                    var stat = getState(self.codemirror);
+                    _replaceSelection(self.codemirror, stat.link, ["[", "](#url#)"], result.id_link_url);
+                }
+            });
         },
         handleImage: function() {
-            var stat = getState(this.codemirror);
-            var url = "http://";
-            url = prompt("URL of the image:", "http://");
-            if(!url) {
-                return false;
-            }
-            _replaceSelection(this.codemirror, stat.image, ["![", "](#url#)"], url);
+            var formFields = [{
+                name: 'Image URL',
+                id: 'id_image_url',
+                type: 'text'
+            }];
+            var self = this;
+            self.showModalForm(formFields, function(result){
+                if(result.id_image_url !== undefined && result.id_image_url !== "" ) {
+                    var stat = getState(self.codemirror);
+                    _replaceSelection(self.codemirror, stat.image, ["![", "](#url#)"], result.id_image_url);
+                }
+            });
         },
         handleTable: function() {
             var cm = editor.codemirror;
@@ -282,6 +369,43 @@
         },
         replaceSelection: function(text) {
             _replaceSelection(this.codemirror, undefined, [text]);
+        },
+        showModalForm: function(formFields, callback) {
+            // Set the form fields
+            this.modalFormInputFields = formFields || [];
+
+            // Modal Form Submit
+            var self = this,
+                form = self.$.modalForm;
+
+            form.onsubmit = function(e) {
+                if(e.preventDefault) {
+                    e.preventDefault();
+                }
+
+                var result = {};
+                self.modalFormInputFields.forEach(function(val) {
+                    if(val.id && typeof form[val.id].value !== undefined) {
+                        result[val.id] = form[val.id].value;
+                    }
+                });
+
+                // Remove the submit event handler
+                form.onsubmit = null;
+                self.modalFormInputFields = [];
+
+                // To focus back the editor
+                self.codemirror.focus();
+
+                setTimeout(function(){
+                    callback(result);
+                }, 100);
+
+                return false;
+            };
+        },
+        resetFormFields: function(){
+            this.modalFormInputFields = [];
         }
     });
 
