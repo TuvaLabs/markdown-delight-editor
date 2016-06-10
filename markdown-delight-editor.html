@@ -165,7 +165,7 @@
             <div style="clear:both"></div>
         </div>
         <div id="form-wrapper" hidden$="{{isEqual(modalFormInputFields.length, 0)}}">
-            <div class="overlay"></div>
+            <div class="overlay" on-tap="resetFormFields"></div>
             <form id="modalForm">
                 <fieldset>
                     <table>
@@ -175,7 +175,7 @@
                                     <template is="dom-if" if="{{isEqual(item.type, 'text')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <input id="{{item.id}}" type="text"/>
+                                            <input id="{{item.id}}" type="text" value="{{item.value}}"/>
                                         </td>
                                     </template>
                                     <template is="dom-if" if="{{isEqual(item.type, 'select')}}">
@@ -306,7 +306,13 @@
             _toggleHeading(this.codemirror, "smaller");
         },
         handleLink: function() {
+            var mde = this.codemirror;
             var formFields = [{
+                name: 'link_text',
+                id: 'id_link_text',
+                type: 'text',
+                value: mde.getSelection()
+            },{
                 name: 'URL',
                 id: 'id_link_url',
                 type: 'text'
@@ -314,13 +320,23 @@
             var self = this;
             self.showModalForm(formFields, function(result){
                 if(result.id_link_url !== undefined && result.id_link_url !== "" ) {
-                    var stat = getState(self.codemirror);
-                    _replaceSelection(self.codemirror, stat.link, ["[", "](#url#)"], result.id_link_url);
+                    if(result.id_link_text) {
+                        mde.replaceSelection('[' + result.id_link_text + '](' + result.id_link_url + ')');
+                    } else {
+                        var stat = getState(mde);
+                        _replaceSelection(mde, stat.link, ["[", "](#url#)"], result.id_link_url);
+                    }
                 }
             });
         },
         handleImage: function() {
+            var mde = this.codemirror;
             var formFields = [{
+                name: 'alt_text',
+                id: 'id_alt_text',
+                type: 'text',
+                value: mde.getSelection()
+            }, {
                 name: 'Image URL',
                 id: 'id_image_url',
                 type: 'text'
@@ -328,8 +344,12 @@
             var self = this;
             self.showModalForm(formFields, function(result){
                 if(result.id_image_url !== undefined && result.id_image_url !== "" ) {
-                    var stat = getState(self.codemirror);
-                    _replaceSelection(self.codemirror, stat.image, ["![", "](#url#)"], result.id_image_url);
+                    if(result.id_alt_text) {
+                        mde.replaceSelection('![' + result.id_alt_text + '](' + result.id_image_url + ')');
+                    } else {
+                        var stat = getState(mde);
+                        _replaceSelection(mde, stat.image, ["![", "](#url#)"], result.id_image_url);
+                    }
                 }
             });
         },
