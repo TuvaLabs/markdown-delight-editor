@@ -215,11 +215,6 @@
         },
         //TODO Figure out some other way to handle the dynamic value change on the text area
         ready: function() {
-            var self = this;
-            setTimeout(function () {
-                self.readyTemp();
-            }, 100);
-
             // For markdown extension
             var options = {};
             if(this.extension) {
@@ -232,6 +227,14 @@
 
             this.modalFormInputFields = [];
         },
+        attached: function() {
+            // Don't initialize codemirror when the element is intialized in a hidden mode
+            // Assuming that the element is hidden when the top value is 0
+            if(!this.getBoundingClientRect().top) {
+                return;
+            }
+            this.setupEditingArea();
+        },
         updatePreview: function() {
             var html = "";
             if(this.showPreview) {
@@ -239,7 +242,7 @@
             }
             this.$.preview.innerHTML = html;
         },
-        readyTemp: function() {
+        setupEditingArea: function() {
             var textArea = this.querySelector('textarea'),
             previewArea = this.$.preview,
             self = this;
