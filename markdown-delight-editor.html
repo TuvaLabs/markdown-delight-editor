@@ -244,11 +244,15 @@
             this.setupEditingArea();
         },
         updatePreview: function() {
-            var html = "";
-            if(this.showPreview) {
-                html = this.markdownConverter.makeHtml(this.querySelector('textarea').value);
+            // Refresh the preview after timeout
+            var self = this;
+            if(self.updatePreviewTimeout) {
+                clearTimeout(self.updatePreviewTimeout);
             }
-            this.$.preview.innerHTML = html;
+            self.updatePreviewTimeout = setTimeout(function () {
+                var html = self.showPreview? self.markdownConverter.makeHtml(self.querySelector('textarea').value): "";
+                self.$.preview.innerHTML = html;
+            }, 200);
         },
         setupEditingArea: function() {
             var textArea = this.querySelector('textarea'),
@@ -262,7 +266,9 @@
             codemirror.on('change', function() {
                 // Update the textarea when the codemirror content gets updated
                 textArea.value = codemirror.getValue();
-                self.updatePreview();
+                if(self.showPreview) {
+                    self.updatePreview();
+                }
             });
             this.codemirror = codemirror;
 
@@ -377,6 +383,9 @@
             this.showPreview = this.showPreview? '': 'show-preview';
 
             this.updatePreview();
+
+            // Refresh the codemirror view
+            this.refreshCodeEditor();
         },
         handleExpandOrCollapse: function() {
             if(this.fullScreenView === 'full-screen') {
@@ -384,8 +393,17 @@
             } else {
                 this.fullScreenView = 'full-screen';
                 document.addEventListener('keydown', this._keydownEventHandler);
+                // Refresh the codemirror view
+                this.refreshCodeEditor();
             }
-            this.codemirror.focus();
+        },
+        refreshCodeEditor: function() {
+            // Refresh the codemirror view
+            var self = this;
+            setTimeout(function () {
+                self.codemirror.refresh();
+                self.codemirror.focus();
+            }, 100);
         },
         _onCaptureKeyDown: function(e) {
             if(e.keyCode === 27) {
@@ -397,6 +415,8 @@
             this.showPreview = '';
             this.updatePreview();
             document.removeEventListener('keydown', this._keydownEventHandler);
+            // Refresh the codemirror view
+            this.refreshCodeEditor();
         },
         replaceSelection: function(text) {
             _replaceSelection(this.codemirror, undefined, [text]);
