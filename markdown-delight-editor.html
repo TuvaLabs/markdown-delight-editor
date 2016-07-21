@@ -132,7 +132,7 @@
         background: #000;
         opacity: .5;
     }
-    #form-wrapper fieldset input {
+    #form-wrapper fieldset input[type="text"] {
         width: 100%;
     }
     </style>
@@ -175,18 +175,26 @@
                                     <template is="dom-if" if="{{isEqual(item.type, 'text')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <input id="{{item.id}}" type="text" value="{{item.value}}"/>
+                                            <input name="{{item.id}}" type="text" value="{{item.value}}"/>
                                         </td>
                                     </template>
                                     <template is="dom-if" if="{{isEqual(item.type, 'select')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <select id="{{item.id}}">
+                                            <select name="{{item.id}}">
                                                 <option value="">--select--</option>
                                                 <template is="dom-repeat" items="{{item.options}}">
                                                     <option value="{{item.value}}">{{item.display}}</option>
                                                 </template>
                                             </select>
+                                        </td>
+                                    </template>
+                                    <template is="dom-if" if="{{isEqual(item.type, 'radio')}}">
+                                        <td><span>{{item.name}}</span></td>
+                                        <td>
+                                            <template is="dom-repeat" items="{{item.options}}" as="opt">
+                                                <label><input checked="{{isEqual(opt.value, item.value)}}" type="radio" name="{{item.id}}" value="{{opt.value}}"/> {{opt.display}}</label>
+                                            </template>
                                         </td>
                                     </template>
                                     <template is="dom-if" if="{{isEqual(item.type, 'label')}}">
