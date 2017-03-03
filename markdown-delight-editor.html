@@ -420,8 +420,23 @@
             // Refresh the codemirror view
             this.refreshCodeEditor();
         },
-        replaceSelection: function(text) {
-            _replaceSelection(this.codemirror, undefined, [text]);
+        replaceSelection: function(text, isReplace) {
+            var cm = this.codemirror;
+            if(isReplace) {
+                var startPoint = cm.getCursor("start");
+                var endPoint = cm.getCursor("end");
+                var selectedTextLength = cm.getSelection().length;
+                cm.replaceSelection(text);
+
+                endPoint.ch += text.length - selectedTextLength;
+                cm.setSelection(startPoint, endPoint);
+                cm.focus();
+            } else {
+                _replaceSelection(cm, undefined, [text]);
+            }
+        },
+        getSelection: function() {
+            return this.codemirror.getSelection();
         },
         showModalForm: function(formFields, callback) {
             // Set the form fields
