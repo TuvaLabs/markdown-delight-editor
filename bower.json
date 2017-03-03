@@ -27,5 +27,8 @@
     "codemirror": "CodeMirror#^5.13.2",
     "components-font-awesome": "^4.5.0",
     "showdown": "^1.3.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "^1.1.8"
   }
 }
