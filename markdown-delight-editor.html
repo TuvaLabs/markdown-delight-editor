@@ -269,8 +269,14 @@ Example:
             previewArea = this.$.preview,
             self = this;
 
+            // enable spell checker
+            CodeMirrorSpellChecker({
+                codeMirrorInstance: CodeMirror,
+            });
+
             // Initialise the codemirror
             var codemirror = CodeMirror.fromTextArea(textArea, {
+                mode: "spell-checker",
                 'lineWrapping': true
             });
             codemirror.on('change', function() {
