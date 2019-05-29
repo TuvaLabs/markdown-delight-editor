@@ -269,15 +269,9 @@ Example:
             previewArea = this.$.preview,
             self = this;
 
-            // enable spell checker
-            CodeMirrorSpellChecker({
-                codeMirrorInstance: CodeMirror,
-            });
-
             // Initialise the codemirror
             var codemirror = CodeMirror.fromTextArea(textArea, {
-                mode: "spell-checker",
-                'lineWrapping': true
+                lineWrapping: true
             });
             codemirror.on('change', function() {
                 // Update the textarea when the codemirror content gets updated
@@ -317,7 +311,12 @@ Example:
                 if(activeButton) {
                     activeButton.className = activeButton.className + " active";
                 }
-        	});
+            });
+
+            // Load typo and initialize spell checker
+            loadTypo(this.importPath, function(typo){
+                startSpellCheck(codemirror, typo);
+            });
         },
         // Public function for each toolbar items
         handleBold: function() {
