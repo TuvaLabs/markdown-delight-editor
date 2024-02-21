@@ -271,7 +271,54 @@ Example:
 
             // Initialise the codemirror
             var codemirror = CodeMirror.fromTextArea(textArea, {
-                lineWrapping: true
+                lineWrapping: true,
+                extraKeys:{
+                    Enter: function(cm){
+                        var cursor = cm.getCursor();
+                        var olRegEx = /^(\s*)\d+\.\s+/;
+                        var ulRegEx = /^(\s*)(\*|\-|\+)\s+/;
+                        var currentLine = cursor.line;
+                        var currentLineText = cm.getLine(currentLine);
+
+                        // Check ordered list
+                        var olFound = currentLineText.match(olRegEx);
+                        // Check un-ordered list
+                        var ulFound = currentLineText.match(ulRegEx);
+                        if(olFound || ulFound) {
+                            var stringToAppend = "";
+                            var cleanCurrentLine = false;
+                            if(ulFound) {
+                                if(currentLineText === '* ') {
+                                    cleanCurrentLine = true;
+                                } else {
+                                    stringToAppend = "* ";
+                                }
+                            } else if(olFound) {
+                                if(olFound[0] === currentLineText) {
+                                    cleanCurrentLine = true;
+                                } else {
+                                    stringToAppend =  parseInt(olFound[0].replace('.', '')) + 1 + ". ";
+                                }
+                            }
+                            var startPos = {
+                                line: currentLine,
+                                ch: currentLineText.length
+                            };
+                            var endPos = null;
+                            if(cleanCurrentLine) {
+                                startPos.ch = 0;
+                                endPos = {
+                                    line: currentLine,
+                                    ch: currentLineText.length
+                                }
+                            }
+                            cm.replaceRange('\n' + stringToAppend, startPos, endPos);
+                            return CodeMirror.Fail;
+                        } else {
+                            return CodeMirror.Pass;
+                        }
+                    }
+                }
             });
             codemirror.on('change', function() {
                 // Update the textarea when the codemirror content gets updated
@@ -624,7 +671,8 @@ Example:
                 if(stat[name]) {
                     text = text.replace(repl[name], "$1");
                 } else {
-                    text = map[name] + text;
+                    var prefix = name === 'ordered-list'? map[name].replace('1', (i + 1 - startPoint.line)): map[name]
+                    text = prefix + text;
                 }
                 cm.replaceRange(text, {
                     line: i,
