@@ -191,8 +191,10 @@ Example:
                                     <template is="dom-if" if="{{isEqual(item.type, 'select')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <select name="{{item.id}}">
-                                                <option value="">--select--</option>
+                                            <select name="{{item.id}}" multiple$="{{item.multiple}}" style="min-height: auto !important;">
+                                                <template is="dom-if" if="{{!item.multiple}}">
+                                                    <option value="">--select--</option>
+                                                </template>
                                                 <template is="dom-repeat" items="{{item.options}}">
                                                     <option value="{{item.value}}">{{item.display}}</option>
                                                 </template>
@@ -514,7 +516,11 @@ Example:
                 var result = {};
                 self.modalFormInputFields.forEach(function(val) {
                     if(val.id && typeof form[val.id].value !== undefined) {
-                        result[val.id] = form[val.id].value;
+                        if (val.multiple) {
+                            result[val.id] = jQuery(form[val.id]).val()
+                        } else {
+                            result[val.id] = form[val.id].value;
+                        }
                     }
                 });
 
