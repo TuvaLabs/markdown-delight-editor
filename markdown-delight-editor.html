@@ -18,7 +18,7 @@ Example:
         background-color: #fff;
     }
     .mde-wrapper {
-        height: 300px;
+        height: 350px;
         border: 1px solid #ddd;
         overflow: hidden;
         display: flex;
@@ -127,8 +127,8 @@ Example:
         padding: 10px;
         margin: auto;
         width: 100%;
-        max-width: 300px;
-        background: #fff;
+        max-width: 600px;
+        background-color: #fff;
         max-height: calc(100% - 20px);
         overflow-y: auto;
     }
@@ -142,8 +142,15 @@ Example:
         background: #000;
         opacity: .5;
     }
-    #form-wrapper fieldset input[type="text"] {
+    #form-wrapper fieldset {
+        margin-bottom: 10px;
+    }
+    #form-wrapper fieldset table {
         width: 100%;
+    }
+    #form-wrapper fieldset input[type="text"], #form-wrapper fieldset select {
+      box-sizing: border-box;
+      width: 100%;
     }
     </style>
     <div class$="mde-wrapper {{fullScreenView}} {{showPreview}}">
@@ -196,7 +203,7 @@ Example:
                                                     <option value="">--select--</option>
                                                 </template>
                                                 <template is="dom-repeat" items="{{item.options}}">
-                                                    <option value="{{item.value}}">{{item.display}}</option>
+                                                    <option selected="{{item.selected}}" value="{{item.value}}">{{item.display}}</option>
                                                 </template>
                                             </select>
                                         </td>
