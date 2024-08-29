@@ -145,6 +145,9 @@ Example:
     #form-wrapper fieldset {
         margin-bottom: 10px;
     }
+    #form-wrapper input:disabled, #form-wrapper select:disabled {
+        opacity: 0.5;
+    }
     #form-wrapper fieldset table {
         width: 100%;
     }
@@ -192,13 +195,13 @@ Example:
                                     <template is="dom-if" if="{{isEqual(item.type, 'text')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <input name="{{item.id}}" type="text" value="{{item.value}}"/>
+                                            <input name="{{item.id}}" type="text" disabled$="{{item.disabled}}" value="{{item.value}}"/>
                                         </td>
                                     </template>
                                     <template is="dom-if" if="{{isEqual(item.type, 'select')}}">
                                         <td><span>{{item.name}}</span></td>
                                         <td>
-                                            <select name="{{item.id}}" multiple$="{{item.multiple}}" style="min-height: auto !important;">
+                                            <select name="{{item.id}}" multiple$="{{item.multiple}}" disabled$="{{item.disabled}}" style="min-height: auto !important;">
                                                 <template is="dom-if" if="{{!item.multiple}}">
                                                     <option value="">--select--</option>
                                                 </template>
@@ -212,7 +215,7 @@ Example:
                                         <td><span>{{item.name}}</span></td>
                                         <td>
                                             <template is="dom-repeat" items="{{item.options}}" as="opt">
-                                                <label><input checked="{{isEqual(opt.value, item.value)}}" type="radio" name="{{item.id}}" value="{{opt.value}}"/> {{opt.display}}</label>
+                                                <label><input checked="{{isEqual(opt.value, item.value)}}" disabled$="{{item.disabled}}" type="radio" name="{{item.id}}" value="{{opt.value}}"/> {{opt.display}}</label>
                                             </template>
                                         </td>
                                     </template>
